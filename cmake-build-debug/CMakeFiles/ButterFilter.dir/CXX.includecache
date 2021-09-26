@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/media/li/b806bc78-4cbd-4e31-ba5c-e0212d292e73/clion_project/ButterFilter/Signal_Filter.h
+eigen3/Eigen/Dense
+-
+vector
+-
+
+/media/li/b806bc78-4cbd-4e31-ba5c-e0212d292e73/clion_project/ButterFilter/main.cpp
+Signal_Filter.h
+/media/li/b806bc78-4cbd-4e31-ba5c-e0212d292e73/clion_project/ButterFilter/Signal_Filter.h
+fstream
+-
+vector
+-
+
