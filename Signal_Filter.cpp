@@ -4,17 +4,18 @@
 
 #include "Signal_Filter.h"
 
-#define PI 3.14159
+#define PI 3.14159265358979323846
 
-void Signal_Filter::init(int order, int N) {
+void Signal_Filter::init(int order, int N,float low,float high,float fps) {
     len_a_b = 2 * order + 1;
     pad_len = 3 * len_a_b;
     pad_x_len = N + 2 * pad_len;
 
     zi = new double[len_a_b - 1];
+    cal_a_b(order,low,high,fps);
 }
 
-void Signal_Filter::cal_a_b(int order, double low, double high, double fps, std::vector<double *> &VEC_A_B) {
+void Signal_Filter::cal_a_b(int order, double low, double high, double fps) {
     double Wn[2] = {double(2.0 * low / fps), double(2.0 * high / fps)};
 
     ///////////////////////////////////// 实现python 函数的 buttap
@@ -117,22 +118,20 @@ Signal_Filter::convolve(std::vector<complex<double>> &data, const std::complex<d
 }
 
 ////////////////////////// 开始对数据进行滤波/////////////////////////////////
-void Signal_Filter::filtfilt(const std::vector<double *> vec_a_b, double *X, int N,double *y) {
+void Signal_Filter::filtfilt(float *X, int N,float *y) {
     // 对数据行扩充
     double pad_x[pad_x_len];
     validate_pad(X, N, pad_x_len, pad_x);
-
     // Forward filter.
     double Forward_y[pad_x_len];
-    lfilter(vec_a_b, pad_x, pad_x[0], Forward_y);
-
+    lfilter(VEC_A_B, pad_x, pad_x[0], Forward_y);
     // Backward filter.
     double y0 = Forward_y[pad_x_len - 1];
     reverse(Forward_y, Forward_y + pad_x_len);
     double Backward_y[pad_x_len];
-    lfilter(vec_a_b, Forward_y, y0, Backward_y);
+    lfilter(VEC_A_B, Forward_y, y0, Backward_y);
     reverse(Backward_y, Backward_y + pad_x_len);
-    double *y_ptr = y;
+    float *y_ptr = y;
     if (pad_len > 0) {
         for (int i = pad_len; i < pad_x_len - pad_len; ++i) {
             y_ptr[i - pad_len] = Backward_y[i];
@@ -179,8 +178,8 @@ void Signal_Filter::lfilter_zi(const std::vector<double *> vec_a_b) {
     }
 }
 
-void Signal_Filter::validate_pad(double *x, int N, int pad_x_len, double *pad_x) {
-    double *x_ptr = x;
+void Signal_Filter::validate_pad(float *x, int N, int pad_x_len, double *pad_x) {
+    float *x_ptr = x;
     double *pad_x_ptr = pad_x;
 
     for (int i = 0; i < pad_x_len; ++i) {
