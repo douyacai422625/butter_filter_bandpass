@@ -23,15 +23,15 @@ int main() {
     Signal_Filter sig_filter;
     //    std::string btype,double Wn,int order
     double fps = 30;
-    double low = 3.0 / 60.0, high = 120.0 / 60.0;
+    float low = 3.0 / 60.0, high = 120.0 / 60.0;
     int order = 3;
     std::string type = "bandpass";
 
-    std::string file_path = "/media/li/b806bc78-4cbd-4e31-ba5c-e0212d292e73/clion_project/test/data.txt";
+    std::string file_path = "/media/li/b806bc78-4cbd-4e31-ba5c-e0212d292e73/clion_project/ButterFilter/data.txt";
     fstream txt_file(file_path);
     string s;
     int data_len = 300;
-    double x[data_len];
+    float x[data_len];
     while(getline(txt_file,s))
     {
         std::vector<string> temp= split(s,",");
@@ -40,15 +40,12 @@ int main() {
         }
     }
 
-    sig_filter.init(order,data_len);
-    std::vector<double*> a_b;
-    sig_filter.cal_a_b(order,low,high,fps,a_b);
-    double y[data_len];
-    sig_filter.filtfilt(a_b,x,data_len,y);
+    sig_filter.init(order,data_len,low,high,fps);
+    float y[data_len];
+    sig_filter.filtfilt(x,data_len,y);
     for (int i = 0; i < data_len; ++i) {
-        printf("%f \n",y[i]);
+        printf("%f,",y[i]);
     }
-
-
+    std::cout<<"\n";
     return 0;
 }
